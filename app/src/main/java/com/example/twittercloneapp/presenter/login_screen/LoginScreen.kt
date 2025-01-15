@@ -39,7 +39,7 @@ import androidx.navigation.NavController
 fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val primaryColor = Color(0xFFFF5722)
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -53,7 +53,6 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
         ) {
             Text(
                 text = "Inicia Sesión",
-                color = primaryColor,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
@@ -67,7 +66,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = primaryColor,
+
                     unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
                 ),
                 isError = uiState.emailError.isNotEmpty()
@@ -90,7 +89,6 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 shape = RoundedCornerShape(12.dp),
                 visualTransformation = PasswordVisualTransformation(),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = primaryColor,
                     unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
                 ),
                 isError = uiState.passwordError.isNotEmpty()
@@ -109,9 +107,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primaryColor
-                ),
+
                 shape = RoundedCornerShape(12.dp),
                 enabled = !uiState.isLoading
             ) {
@@ -148,4 +144,5 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 viewModel.changeNotificationState(false)
             }
         }
-    }}
+    }
+}

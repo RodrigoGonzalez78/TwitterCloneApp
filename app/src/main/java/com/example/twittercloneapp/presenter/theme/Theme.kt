@@ -1,4 +1,4 @@
-package com.example.twittercloneapp.ui.theme
+package com.example.twittercloneapp.presenter.theme
 
 import android.app.Activity
 import android.os.Build
@@ -9,13 +9,19 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Color(0xFF1DA1F2),
+    secondary = Color(0xFFAAB8C2),
+    background = Color(0xFF15202B),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onBackground = Color.White,
+    onSurface = Color.White
 )
+
 
 private val LightColorScheme = lightColorScheme(
     primary = Purple40,
@@ -47,7 +53,7 @@ fun TwitterCloneAppTheme(
         }
 
         darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        else -> DarkColorScheme
     }
 
     MaterialTheme(

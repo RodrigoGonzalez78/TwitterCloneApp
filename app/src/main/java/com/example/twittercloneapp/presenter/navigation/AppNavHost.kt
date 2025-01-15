@@ -9,7 +9,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.twittercloneapp.presenter.home_screen.HomeScreen
 import com.example.twittercloneapp.presenter.login_screen.LoginScreen
+import com.example.twittercloneapp.presenter.splash_screen.SplashScreen
 
 sealed class Screen(val route: String) {
     data object Splash : Screen("splash")
@@ -26,17 +28,21 @@ fun AppNavHost(
     val isAuthenticated by viewModel.isAuthenticated.collectAsState()
 
     LaunchedEffect(isAuthenticated) {
-        val route = if (isAuthenticated) Screen.Home.route else Screen.Signup.route
+        val route = if (isAuthenticated) Screen.Home.route else Screen.Login.route
         navController.navigate(route) {
             popUpTo(0) { inclusive = true }
         }
     }
 
-    NavHost(navController = navController, startDestination = Screen.Login.route) {
-
-
+    NavHost(navController = navController, startDestination = Screen.Splash.route) {
+        composable(Screen.Splash.route) {
+            SplashScreen()
+        }
         composable(Screen.Login.route) {
             LoginScreen(navController)
+        }
+        composable(Screen.Home.route) {
+            HomeScreen(navController)
         }
     }
 }

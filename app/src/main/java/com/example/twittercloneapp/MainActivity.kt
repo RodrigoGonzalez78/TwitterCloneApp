@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.twittercloneapp.presenter.navigation.AppNavHost
-import com.example.twittercloneapp.ui.theme.TwitterCloneAppTheme
+import com.example.twittercloneapp.presenter.theme.TwitterCloneAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
