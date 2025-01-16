@@ -11,6 +11,25 @@ class DataStoreRepository @Inject constructor(
     private val dataStore: androidx.datastore.core.DataStore<Preferences>
 ) {
     private val JWT_KEY = stringPreferencesKey("jwt_token")
+    private val USER_ID= stringPreferencesKey("user_id")
+
+    suspend fun saveUserId(userId:String ){
+        dataStore.edit { preferences ->
+            preferences[USER_ID] = userId
+        }
+    }
+
+    suspend fun getUserId():Flow<String?>{
+        return dataStore.data.map { preferences ->
+            preferences[USER_ID]
+        }
+    }
+
+    suspend fun deleteUserId(){
+        dataStore.edit { preferences ->
+            preferences.remove(USER_ID)
+        }
+    }
 
     suspend fun saveJwt(jwt: String) {
         dataStore.edit { preferences ->

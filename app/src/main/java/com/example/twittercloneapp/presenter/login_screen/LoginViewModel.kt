@@ -3,6 +3,8 @@ package com.example.twittercloneapp.presenter.login_screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.twittercloneapp.data.remote.ApiService
+import com.example.twittercloneapp.data.remote.dto.UserDto
+import com.example.twittercloneapp.data.repository.DataStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val apiService: ApiService,
+    private  val dataStore: DataStoreRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -57,8 +60,13 @@ class LoginViewModel @Inject constructor(
 
             try {
 
+                val response = apiService.login(UserDto(
+                    email = _uiState.value.email,
+                    password = _uiState.value.password
+                ))
 
-
+                dataStore.saveJwt(response.token)
+                dataStore.saveUserId(response.userID)
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,

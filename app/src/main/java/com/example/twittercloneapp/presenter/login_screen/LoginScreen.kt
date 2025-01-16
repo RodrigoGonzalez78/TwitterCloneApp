@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -33,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.twittercloneapp.presenter.navigation.Screen
 
 
 @Composable
@@ -124,7 +124,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
             TextButton(
                 modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
                 onClick = {
-                    navController.navigate("signup") {
+                    navController.navigate(Screen.Signup.route) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
