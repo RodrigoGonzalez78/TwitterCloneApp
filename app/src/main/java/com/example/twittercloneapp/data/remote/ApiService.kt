@@ -1,18 +1,22 @@
 package com.example.twittercloneapp.data.remote
 
 import com.example.twittercloneapp.data.remote.dto.LoginResponse
+import com.example.twittercloneapp.data.remote.dto.TweetDto
 import com.example.twittercloneapp.data.remote.dto.UserDto
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface ApiService {
 
-    @POST
+    @POST("login")
     suspend fun login(@Body userIdentifier:UserDto):LoginResponse
 
-    @POST
+    @POST("registration")
     suspend fun register(@Body userIdentifier: UserDto)
 
+    @POST("rectweet")
+    suspend fun newTweet(@Header("Authorization") token: String, @Body tweet: TweetDto)
 
 
     companion object {
