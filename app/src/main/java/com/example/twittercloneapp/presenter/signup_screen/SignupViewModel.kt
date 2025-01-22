@@ -49,7 +49,7 @@ class SignupViewModel @Inject constructor(
             emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(currentState.email)
                     .matches()
             ) "Formato de email inválido" else "",
-            passwordError = if (currentState.password.length < 8) "La contraseña debe tener al menos 8 caracteres" else "",
+            passwordError = if (currentState.password.length < 6) "La contraseña debe tener al menos 6 caracteres" else "",
             confirmPasswordError = if (currentState.password != currentState.confirmPassword) "Las contraseñas no coinciden" else ""
         )
         _uiState.update {
@@ -101,7 +101,7 @@ class SignupViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         notification = true,
-                        message = "Error en el registro: ${e.message}"
+                        message = "${e.message}"
                     )
                 }
             }
