@@ -25,6 +25,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+
+
     private fun getSamplePosts() = listOf(
         Post(
             id = "1",
