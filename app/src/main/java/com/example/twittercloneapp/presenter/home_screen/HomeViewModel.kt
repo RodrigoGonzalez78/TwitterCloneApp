@@ -2,11 +2,17 @@ package com.example.twittercloneapp.presenter.home_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.twittercloneapp.data.remote.ApiService
+import com.example.twittercloneapp.data.remote.dto.ReturnTweetsFollowers
+import com.example.twittercloneapp.data.remote.dto.UserDto
+import com.example.twittercloneapp.data.repository.DataStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,42 +20,51 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val apiService: ApiService,
+    private val dataStore: DataStoreRepository
 ) :ViewModel() {
 
-    private val _posts = MutableStateFlow<List<Post>>(emptyList())
-    val posts: StateFlow<List<Post>> = _posts.asStateFlow()
+    private val _posts = MutableStateFlow<List<ReturnTweetsFollowers>>(emptyList())
+    val posts: StateFlow<List<ReturnTweetsFollowers>> = _posts.asStateFlow()
+
+    private val _messageAlert = MutableStateFlow("")
+    val messageAlert: StateFlow<String> = _messageAlert.asStateFlow()
+
+    private val _profileData = MutableStateFlow(UserDto())
+    val profileData: StateFlow<UserDto> =_profileData.asStateFlow()
 
     init {
+        getTweets()
+    }
+
+    private fun getProfile(){
+
         viewModelScope.launch {
-            _posts.value = getSamplePosts()
+            try{
+                val token ="Bearer " + dataStore.getJwt().first().toString()
+                val idUser=dataStore.getUserId().first().toString()
+                val profileDt = apiService.viewProfile(token,idUser)
+                _profileData.value=profileDt
+
+            }catch (e: Exception){
+                _messageAlert.update {
+                    "Error al cargar los tweets"
+                }
+            }
         }
     }
 
+    private fun getTweets(){
+        viewModelScope.launch {
+            try {
+                val token ="Bearer " + dataStore.getJwt().first().toString()
+                val tweets = apiService.readTweetsFollowers(1,token)
+                _posts.value = tweets
 
-
-    private fun getSamplePosts() = listOf(
-        Post(
-            id = "1",
-            authorName = "Tech User",
-            authorHandle = "@techuser",
-            authorAvatar = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Captura%20desde%202025-01-18%2001-05-28-c5QsoemRJheVEmp6EbgSeqEIz0DRCJ.png",
-            content = "Just finished an amazing presentation at the tech conference! The future of AI is incredibly exciting. Thanks everyone for the great questions and engagement! #TechConf2024 #AI",
-            timeAgo = "2h",
-            comments = 24,
-            reposts = 142,
-            likes = 897
-        ),
-    )
+            }catch (e:Exception){
+                _messageAlert.update {
+                    "Error al cargar los tweets"
+                }
+            }
+        }
+    }
 }
-
-data class Post(
-    val id: String,
-    val authorName: String,
-    val authorHandle: String,
-    val authorAvatar: String,
-    val content: String,
-    val timeAgo: String,
-    val comments: Int,
-    val reposts: Int,
-    val likes: Int
-)

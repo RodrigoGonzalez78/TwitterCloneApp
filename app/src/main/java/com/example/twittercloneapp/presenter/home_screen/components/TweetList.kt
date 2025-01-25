@@ -10,26 +10,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.example.twittercloneapp.presenter.home_screen.Post
+import com.example.twittercloneapp.data.remote.dto.ReturnTweetsFollowers
+
 
 @Composable
-fun TweetList(posts: List<Post>) {
+fun TweetList(posts: List<ReturnTweetsFollowers>) {
     LazyColumn {
         items(posts) { post ->
             PostItem(post = post)
@@ -38,7 +31,7 @@ fun TweetList(posts: List<Post>) {
 }
 
 @Composable
-private fun PostItem(post: Post) {
+private fun PostItem(post: ReturnTweetsFollowers) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -49,13 +42,13 @@ private fun PostItem(post: Post) {
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
+            /*AsyncImage(
                 model = post.authorAvatar,
                 contentDescription = "Avatar",
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-            )
+            )*/
             Column(
                 modifier = Modifier
                     .padding(start = 12.dp)
@@ -65,48 +58,26 @@ private fun PostItem(post: Post) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = post.authorName,
+                        text = post.userID,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = " " + post.timeAgo,
+                        text = " " + post.tweet.date,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = post.content,
+                    text = post.tweet.message?:"",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            PostAction(
-                icon = Icons.Default.Email,
-                count = post.comments
-            )
-            PostAction(
-                icon = Icons.Default.Refresh,
-                count = post.reposts
-            )
-            PostAction(
-                icon = Icons.Default.Favorite,
-                count = post.likes
-            )
-            PostAction(
-                icon = Icons.Default.Share,
-                count = null
-            )
-        }
+
     }
 }
 

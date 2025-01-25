@@ -24,7 +24,7 @@ interface ApiService {
     @POST("registration")
     suspend fun register(@Body userIdentifier: UserDto)
 
-    @POST("rectweet")
+    @POST("tweet")
     suspend fun newTweet(@Header("Authorization") token: String, @Body tweet: TweetDto)
 
     @GET("viewprofile")
@@ -98,7 +98,7 @@ interface ApiService {
     fun readTweetsFollowers(
         @Query("page") page: Int,
         @Header("Authorization") token: String
-    ):ReturnTweetsFollowers
+    ):List<ReturnTweetsFollowers>
 
     companion object {
         const val BASE_URL = "http://192.168.100.7:8080"

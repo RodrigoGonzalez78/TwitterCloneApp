@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.twittercloneapp.presenter.home_screen.HomeScreen
 import com.example.twittercloneapp.presenter.login_screen.LoginScreen
+import com.example.twittercloneapp.presenter.new_tweet.NewTweet
 import com.example.twittercloneapp.presenter.signup_screen.SignupScreen
 import com.example.twittercloneapp.presenter.splash_screen.SplashScreen
 
@@ -19,6 +20,7 @@ sealed class Screen(val route: String) {
     data object Home : Screen("home")
     data object Signup : Screen("signup")
     data object Login : Screen("login")
+    data object NewTweet : Screen("mew_tweet")
 }
 
 @Composable
@@ -38,6 +40,9 @@ fun AppNavHost(
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
         composable(Screen.Splash.route) {
             SplashScreen()
+        }
+        composable(Screen.NewTweet.route){
+            NewTweet(navController)
         }
         composable(Screen.Login.route) {
             LoginScreen(navController)
