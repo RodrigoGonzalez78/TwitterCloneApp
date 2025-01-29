@@ -6,6 +6,8 @@ import com.example.twittercloneapp.data.remote.dto.ReturnTweetsFollowers
 import com.example.twittercloneapp.data.remote.dto.TweetDto
 import com.example.twittercloneapp.data.remote.dto.UserDto
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -50,7 +52,7 @@ interface ApiService {
     @POST("/uploadAvatar")
     fun uploadAvatar(
         @Part avatar: MultipartBody.Part
-    )
+    ): Call<ResponseBody>
 
     @Multipart
     @POST("/uploadBanner")

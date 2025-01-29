@@ -1,5 +1,9 @@
 package com.example.twittercloneapp.presenter.home_screen
 
+import android.app.Activity
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,7 +52,24 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
     val profileData by viewModel.profileData.collectAsState()
     val currentScreen = remember { mutableStateOf("TweetList") }
 
-
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                viewModel.uploadImage(
+                    uri = uri,
+                    isAvatar = true,
+                    onSuccess = {
+                        viewModel.getProfile()
+                    },
+                    onError = { error ->
+                        Log.e("UploadAvatar", "Error uploading avatar", error)
+                    }
+                )
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -78,7 +99,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                    Icon(imageVector = Icons.Default.Add, "")
                }
                "Profile"->FloatingActionButton(onClick = {
-                   navController.navigate(Screen.NewTweet.route)
+                   navController.navigate(Screen.EditProfile.route)
                }) {
                    Icon(imageVector = Icons.Default.Edit, "")
                }
@@ -96,7 +117,11 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
             when (currentScreen.value) {
                 "TweetList" -> TweetList(posts = posts)
                 "Search" -> SearchList()
-                "Profile" -> UserProfile(profileData)
+                "Profile" -> UserProfile(
+                    profileData,
+                    viewModel =viewModel,
+                    launcher = launcher
+                )
                 else -> TweetList(posts = posts)
             }
         }
