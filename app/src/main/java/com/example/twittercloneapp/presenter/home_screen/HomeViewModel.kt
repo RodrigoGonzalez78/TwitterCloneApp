@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.MediaStore.*
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -61,8 +62,9 @@ class HomeViewModel @Inject constructor(
 
             } catch (e: Exception) {
                 _messageAlert.update {
-                    "Error al cargar los tweets"
+                   "Carar perfil"+ e.message.toString()
                 }
+                Log.e("MiApp","Carar perfil"+ e.message.toString())
             }
         }
     }
@@ -76,8 +78,9 @@ class HomeViewModel @Inject constructor(
 
             } catch (e: Exception) {
                 _messageAlert.update {
-                    "Error al cargar los tweets"
+                    "Cargar los tweets" + e.message.toString()
                 }
+                Log.e("MiApp","Cargar los tweets" + e.message.toString())
             }
         }
     }

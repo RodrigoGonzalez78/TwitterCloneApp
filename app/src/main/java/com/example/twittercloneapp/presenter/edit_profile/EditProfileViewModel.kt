@@ -1,5 +1,6 @@
 package com.example.twittercloneapp.presenter.edit_profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.twittercloneapp.data.remote.ApiService
@@ -45,9 +46,11 @@ class EditProfileViewModel @Inject constructor(
         viewModelScope.launch {
 
             try {
+
                 val token = "Bearer " + dataStore.getJwt().first().toString()
-                val userId = dataStore.getUserId().toString()
-                val user = apiService.viewProfile(token, userId)
+                val idUser = dataStore.getUserId().first().toString()
+                val user = apiService.viewProfile(token, idUser)
+
                 _name.value = user.name ?: ""
                 _lastname.value = user.lastName ?: ""
                 _dateBirth.value = user.dateBirth ?: ""
@@ -56,6 +59,8 @@ class EditProfileViewModel @Inject constructor(
                 _bibliography.value = user.bibliography ?: ""
             } catch (e: Exception) {
                 _messageAlert.value = e.message.toString()
+                Log.e("MiApp","Carar perfil"+ e.message.toString())
+                Log.e("MiApp",dataStore.getUserId().first().toString())
             }
 
         }
@@ -91,17 +96,20 @@ class EditProfileViewModel @Inject constructor(
 
             try {
                 val user = UserDto(
-                    _name.value,
-                    _lastname.value,
-                    _dateBirth.value,
-                    _ubication.value,
-                    _website.value,
-                    _bibliography.value
+                    _name.value.ifEmpty { null },
+                    _lastname.value.ifEmpty { null },
+                    _dateBirth.value.ifEmpty{null},
+                    _ubication.value.ifEmpty { null },
+                    _website.value.ifEmpty { null },
+                    _bibliography.value.ifEmpty { null }
                 )
+
+
                 val token = "Bearer " + dataStore.getJwt().first().toString()
                 apiService.modifyProfile(token, user)
             } catch (e: Exception) {
                 _messageAlert.value = e.message.toString()
+                Log.e("MiApp","Guardar Pefil"+ e.message.toString())
             }
 
         }

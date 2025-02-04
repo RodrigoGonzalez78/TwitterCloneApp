@@ -29,67 +29,67 @@ interface ApiService {
     @POST("tweet")
     suspend fun newTweet(@Header("Authorization") token: String, @Body tweet: TweetDto)
 
-    @GET("viewprofile")
-    suspend fun viewProfile(@Header("Authorizatio") token: String, @Query("id") id: String): UserDto
+    @GET("/viewprofile")
+    suspend fun viewProfile(@Header("Authorization") token: String, @Query("id") id: String): UserDto
 
-    @PUT("modifyprofile")
-    suspend fun modifyProfile(@Header("Authorizatio") token: String, @Body userDto: UserDto)
+    @PUT("modifyProfile")
+    suspend fun modifyProfile(@Header("Authorization") token: String, @Body userDto: UserDto)
 
     @GET("readtweets")
-    fun readTweets(
+   suspend fun readTweets(
         @Query("id") id: String,
         @Query("page") page: Int,
         @Header("Authorization") token: String
     ): List<TweetDto>
 
     @DELETE("/deleteTweet")
-    fun deleteTweet(
+    suspend  fun deleteTweet(
         @Query("id") id: String,
         @Query("userId") userId: String
     )
 
     @Multipart
     @POST("/uploadAvatar")
-    fun uploadAvatar(
+    suspend  fun uploadAvatar(
         @Part avatar: MultipartBody.Part
     ): Call<ResponseBody>
 
     @Multipart
     @POST("/uploadBanner")
-    fun uploadBanner(
+    suspend fun uploadBanner(
         @Part banner: MultipartBody.Part
     )
 
     @GET("/getAvatar")
-    fun getAvatar(
+   suspend  fun getAvatar(
         @Query("id") id: String
     )
 
     @GET("/getBanner")
-    fun getBanner(
+   suspend  fun getBanner(
         @Query("id") id: String
     )
 
     @POST("/highRelation")
-    fun createRelation(
+   suspend fun createRelation(
         @Query("id") id: String,
         @Header("Authorization") token: String
     )
 
     @DELETE("/downRelation")
-    fun deleteRelation(
+   suspend fun deleteRelation(
         @Query("id") id: String,
         @Header("Authorization") token: String
     )
 
     @GET("/consultRelation")
-    fun consultRelation(
+   suspend fun consultRelation(
         @Query("id") id: String,
         @Header("Authorization") token: String
     ): RelationStatusResponse
 
     @GET("/listUsers")
-    fun listUsers(
+   suspend fun listUsers(
         @Query("page") page: Int,
         @Query("type") type: String?,
         @Query("search") search: String?,
@@ -97,7 +97,7 @@ interface ApiService {
     ): List<UserDto>
 
     @GET("/readTweetsFollowers")
-    fun readTweetsFollowers(
+   suspend fun readTweetsFollowers(
         @Query("page") page: Int,
         @Header("Authorization") token: String
     ):List<ReturnTweetsFollowers>

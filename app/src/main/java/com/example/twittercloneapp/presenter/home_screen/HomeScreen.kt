@@ -2,6 +2,7 @@ package com.example.twittercloneapp.presenter.home_screen
 
 import android.app.Activity
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -32,11 +33,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.twittercloneapp.presenter.home_screen.components.SearchList
@@ -50,7 +53,9 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
 
     val posts by viewModel.posts.collectAsState()
     val profileData by viewModel.profileData.collectAsState()
+    val messageAlert by viewModel.messageAlert.collectAsState()
     val currentScreen = remember { mutableStateOf("TweetList") }
+    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -124,6 +129,11 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                 )
                 else -> TweetList(posts = posts)
             }
+        }
+
+        LaunchedEffect(messageAlert) {
+            Toast.makeText(context, messageAlert, Toast.LENGTH_LONG).show()
+
         }
     }
 
