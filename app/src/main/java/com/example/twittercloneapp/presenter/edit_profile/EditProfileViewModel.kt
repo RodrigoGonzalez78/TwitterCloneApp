@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.twittercloneapp.data.remote.ApiService
 import com.example.twittercloneapp.data.remote.dto.UserDto
 import com.example.twittercloneapp.data.repository.DataStoreRepository
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,6 +58,7 @@ class EditProfileViewModel @Inject constructor(
                 _ubication.value = user.ubication ?: ""
                 _website.value = user.webSite ?: ""
                 _bibliography.value = user.bibliography ?: ""
+
             } catch (e: Exception) {
                 _messageAlert.value = e.message.toString()
                 Log.e("MiApp","Carar perfil"+ e.message.toString())
@@ -96,20 +98,21 @@ class EditProfileViewModel @Inject constructor(
 
             try {
                 val user = UserDto(
-                    _name.value.ifEmpty { null },
-                    _lastname.value.ifEmpty { null },
-                    _dateBirth.value.ifEmpty{null},
-                    _ubication.value.ifEmpty { null },
-                    _website.value.ifEmpty { null },
-                    _bibliography.value.ifEmpty { null }
+
+                   name=  _name.value.ifEmpty { null },
+                    lastName =  _lastname.value.ifEmpty { null },
+                    dateBirth =  _dateBirth.value.ifEmpty{null},
+                    ubication =  _ubication.value.ifEmpty { null },
+                    webSite =  _website.value.ifEmpty { null },
+                    bibliography =  _bibliography.value.ifEmpty { null }
                 )
 
 
                 val token = "Bearer " + dataStore.getJwt().first().toString()
-                apiService.modifyProfile(token, user)
+                val response= apiService.modifyProfile(token, user)
+
             } catch (e: Exception) {
                 _messageAlert.value = e.message.toString()
-                Log.e("MiApp","Guardar Pefil"+ e.message.toString())
             }
 
         }

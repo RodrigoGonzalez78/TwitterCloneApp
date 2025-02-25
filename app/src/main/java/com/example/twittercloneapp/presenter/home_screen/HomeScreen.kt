@@ -52,29 +52,10 @@ import com.example.twittercloneapp.presenter.navigation.Screen
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
 
     val posts by viewModel.posts.collectAsState()
-    val profileData by viewModel.profileData.collectAsState()
     val messageAlert by viewModel.messageAlert.collectAsState()
     val currentScreen = remember { mutableStateOf("TweetList") }
     val context = LocalContext.current
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            result.data?.data?.let { uri ->
-                viewModel.uploadImage(
-                    uri = uri,
-                    isAvatar = true,
-                    onSuccess = {
-                        viewModel.getProfile()
-                    },
-                    onError = { error ->
-                        Log.e("UploadAvatar", "Error uploading avatar", error)
-                    }
-                )
-            }
-        }
-    }
 
     Scaffold(
         bottomBar = {
@@ -88,7 +69,11 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                     Icon(Icons.Default.Search, contentDescription = "Search")
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = { currentScreen.value = "Profile" }) {
+                IconButton(onClick = {
+                    viewModel.getProfile()
+                    currentScreen.value = "Profile"
+                }
+                ) {
                     Icon(Icons.Default.Person, contentDescription = "Profile")
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -97,19 +82,21 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
 
         floatingActionButton = {
 
-           when(currentScreen.value){
-               "TweetList"-> FloatingActionButton(onClick = {
-                   navController.navigate(Screen.NewTweet.route)
-               }) {
-                   Icon(imageVector = Icons.Default.Add, "")
-               }
-               "Profile"->FloatingActionButton(onClick = {
-                   navController.navigate(Screen.EditProfile.route)
-               }) {
-                   Icon(imageVector = Icons.Default.Edit, "")
-               }
-               else ->{}
-           }
+            when (currentScreen.value) {
+                "TweetList" -> FloatingActionButton(onClick = {
+                    navController.navigate(Screen.NewTweet.route)
+                }) {
+                    Icon(imageVector = Icons.Default.Add, "")
+                }
+
+                "Profile" -> FloatingActionButton(onClick = {
+                    navController.navigate(Screen.EditProfile.route)
+                }) {
+                    Icon(imageVector = Icons.Default.Edit, "")
+                }
+
+                else -> {}
+            }
 
         }
     ) { innerPadding ->
@@ -121,12 +108,11 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
         ) {
             when (currentScreen.value) {
                 "TweetList" -> TweetList(posts = posts)
-                "Search" -> SearchList()
+                "Search" -> SearchList(viewModel)
                 "Profile" -> UserProfile(
-                    profileData,
-                    viewModel =viewModel,
-                    launcher = launcher
+                    viewModel = viewModel
                 )
+
                 else -> TweetList(posts = posts)
             }
         }
