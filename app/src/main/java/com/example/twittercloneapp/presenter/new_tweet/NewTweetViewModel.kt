@@ -1,6 +1,5 @@
 package com.example.twittercloneapp.presenter.new_tweet
 
-import androidx.datastore.dataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.twittercloneapp.data.remote.ApiService

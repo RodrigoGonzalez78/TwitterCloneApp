@@ -70,7 +70,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
-                    viewModel.getProfile()
+                    viewModel.profileData()
                     currentScreen.value = "Profile"
                 }
                 ) {

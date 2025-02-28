@@ -61,6 +61,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun profileData(){
+        this.getProfile()
+        this.getProfileTweets()
+    }
+
     private fun searchUsers(searchWords: String) {
         viewModelScope.launch {
             try {
