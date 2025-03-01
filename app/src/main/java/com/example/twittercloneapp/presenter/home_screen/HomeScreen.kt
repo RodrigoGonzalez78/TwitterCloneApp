@@ -108,7 +108,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
         ) {
             when (currentScreen.value) {
                 "TweetList" -> TweetList(posts = posts)
-                "Search" -> SearchList(viewModel)
+                "Search" -> SearchList(navController, viewModel)
                 "Profile" -> UserProfile(
                     viewModel = viewModel
                 )

@@ -1,5 +1,6 @@
 package com.example.twittercloneapp.presenter.home_screen.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,20 +21,27 @@ import androidx.compose.ui.unit.dp
 import com.example.twittercloneapp.presenter.home_screen.HomeViewModel
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.twittercloneapp.presenter.navigation.Screen
 
 @Composable
 fun SearchList(
+    navController: NavController,
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -61,7 +69,17 @@ fun SearchList(
 
         LazyColumn {
             items(searchResults) { user ->
-                ProfileCard(name = user.name?:"", description = user.bibliography?:"", isFollowing = false, onFollowClick = {})
+                ProfileCard(
+                    name = user.name ?: "",
+                    description = user.bibliography ?: "",
+                    isFollowing = false,
+                    onFollowClick = {
+                        navController.navigate(
+                            Screen.UsersProfiles.createRoute(
+                                userId = user.id ?: ""
+                            )
+                        )
+                    })
             }
         }
     }
@@ -75,81 +93,46 @@ fun ProfileCard(
     profileImageUrl: String = "https://img.freepik.com/vector-premium/icono-perfil-simple-color-blanco-icono_1076610-50204.jpg?semt=ais_hybrid",
     onFollowClick: () -> Unit
 ) {
-    Card(
+
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .clickable { onFollowClick() },
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
+
+        AsyncImage(
+            model = profileImageUrl,
+            contentDescription = "Foto de perfil",
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+                .size(40.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
 
-            AsyncImage(
-                model = profileImageUrl,
-                contentDescription = "Foto de perfil",
-                modifier = Modifier
-                    .size(35.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
+        Spacer(modifier = Modifier.width(8.dp))
 
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Spacer(modifier = Modifier.height(2.dp))
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(2.dp))
-
-                Text(
-                    text = description,
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.width(4.dp))
 
-
-                Text(
-                    text = if (isFollowing) "Siguiendo" else "No siguiendo",
-                    fontSize = 12.sp,
-                    color = if (isFollowing)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
 
-
-            Button(
-                onClick = onFollowClick,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isFollowing)
-                        MaterialTheme.colorScheme.surfaceVariant
-                    else
-                        MaterialTheme.colorScheme.primary,
-                    contentColor = if (isFollowing)
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    else
-                        MaterialTheme.colorScheme.onPrimary
-                )
-            ) {
-                Text(
-                    text = if (isFollowing) "Dejar de seguir" else "Seguir"
-                )
-            }
+            Text(
+                text = "description",
+                fontSize = 13.sp,
+                color = Color.Black
+            )
         }
     }
 }

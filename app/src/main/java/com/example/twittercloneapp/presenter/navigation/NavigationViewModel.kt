@@ -21,7 +21,7 @@ class NavigationViewModel @Inject constructor(
     init {
         viewModelScope.launch {
            dataStoreRepository.getJwt().collect { token ->
-               _isAuthenticated.value = Utils.IsJwtValid(token)
+               _isAuthenticated.value = Utils.isJwtValid(token)
            }
         }
     }

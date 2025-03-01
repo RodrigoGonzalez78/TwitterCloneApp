@@ -6,7 +6,6 @@ import com.example.twittercloneapp.data.remote.dto.ReturnTweetsFollowers
 import com.example.twittercloneapp.data.remote.dto.TweetDto
 import com.example.twittercloneapp.data.remote.dto.UserDto
 import okhttp3.MultipartBody
-import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
