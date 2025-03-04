@@ -1,12 +1,9 @@
 package com.example.twittercloneapp.presenter.home_screen.components
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,53 +20,37 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.twittercloneapp.data.remote.dto.ReturnTweetsFollowers
-import com.example.twittercloneapp.data.remote.dto.TweetDto
-import com.example.twittercloneapp.data.remote.dto.UserDto
+import com.example.twittercloneapp.presenter.general_components.PostItem
 import com.example.twittercloneapp.presenter.home_screen.HomeViewModel
+import com.example.twittercloneapp.presenter.navigation.Screen
 import com.example.twittercloneapp.utils.Utils
 
 
 @Composable
-fun UserProfile(viewModel: HomeViewModel = hiltViewModel()) {
+fun UserProfile(viewModel: HomeViewModel = hiltViewModel(),navController: NavController) {
 
     val user by viewModel.profileData.collectAsState()
     val tweetsProfile by viewModel.profileTweets.collectAsState()
@@ -117,7 +98,7 @@ fun UserProfile(viewModel: HomeViewModel = hiltViewModel()) {
 
 
             Button(
-                onClick = {  },
+                onClick = { navController.navigate(Screen.EditProfile.route) },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(16.dp),
@@ -196,106 +177,12 @@ fun UserProfile(viewModel: HomeViewModel = hiltViewModel()) {
         HorizontalDivider(color = Color.LightGray, thickness = 0.8.dp)
         LazyColumn {
             items(tweetsProfile) { tweet ->
-                PostItem(tweet, user,{})
+                PostItem(tweet, user)
                 HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
             }
         }
     }
 }
 
-@Composable
-private fun PostItem(
-    post: TweetDto,
-    user: UserDto,
-    onDeletePost: () -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween, // Distribuye el contenido
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color.LightGray)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Profile Picture",
-                        tint = Color.White,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .align(Alignment.Center)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = user.name ?: "",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                        Text(
-                            text = " · ${Utils.formatISODateLegacy(post.date)}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = post.message ?: "",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            }
-
-
-            IconButton(onClick = { expanded = true }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Opciones",
-                    tint = Color.Blue,
-                    modifier = Modifier
-                        .size(24.dp)
-                )
-            }
-
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                DropdownMenuItem(
-                    onClick = {
-                        expanded = false
-                        onDeletePost()
-                    },
-                    text = { Text("Eliminar post") }
-                )
-            }
-        }
-    }
-}
 
 

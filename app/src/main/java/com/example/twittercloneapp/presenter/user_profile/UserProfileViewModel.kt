@@ -22,21 +22,56 @@ class UserProfileViewModel @Inject constructor(
     private val dataStore: DataStoreRepository
 ) : ViewModel() {
 
-    private val _messageAlert = MutableStateFlow("")
-    val messageAlert: StateFlow<String> = _messageAlert.asStateFlow()
-
     private val _profileData = MutableStateFlow(UserDto())
     val profileData: StateFlow<UserDto> = _profileData.asStateFlow()
 
     private val _profileTweets = MutableStateFlow<List<TweetDto>>(emptyList())
     val profileTweets: StateFlow<List<TweetDto>> = _profileTweets.asStateFlow()
 
+    private val _isFollowing = MutableStateFlow<Boolean>(false)
+    val isFollowing: StateFlow<Boolean> = _isFollowing.asStateFlow()
+
     fun loadUser(userId: String) {
         getProfileData(userId)
         getProfileTweets(userId)
+        isFollowing(userId)
     }
 
-    fun getProfileData(userId: String) {
+    fun isFollowing(userId: String) {
+        viewModelScope.launch {
+            try {
+                val token = "Bearer " + dataStore.getJwt().first().toString()
+                val response = apiService.consultRelation(userId, token)
+                _isFollowing.value = response.status
+            } catch (e: Exception) {
+                Log.e("MiApp", "Error al consultar la realacion" + e.message.toString())
+            }
+        }
+    }
+
+    fun following(userId: String) {
+        viewModelScope.launch {
+            try {
+                val token = "Bearer " + dataStore.getJwt().first().toString()
+                apiService.createRelation(userId, token)
+            } catch (e: Exception) {
+                Log.e("MiApp", "Error al seguir a un usuario" + e.message.toString())
+            }
+        }
+    }
+
+    fun downFollowing(userId: String) {
+        viewModelScope.launch {
+            try {
+                val token = "Bearer " + dataStore.getJwt().first().toString()
+                apiService.deleteRelation(userId, token)
+            } catch (e: Exception) {
+                Log.e("MiApp", "Error al dejar de seguir al usuario" + e.message.toString())
+            }
+        }
+    }
+
+    private fun getProfileData(userId: String) {
 
         viewModelScope.launch {
             try {
@@ -45,9 +80,6 @@ class UserProfileViewModel @Inject constructor(
                 _profileData.value = profileDt
 
             } catch (e: Exception) {
-                _messageAlert.update {
-                    "Carar perfil" + e.message.toString()
-                }
                 Log.e("MiApp", "Carar perfil" + e.message.toString())
             }
         }

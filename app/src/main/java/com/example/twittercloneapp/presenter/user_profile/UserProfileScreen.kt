@@ -27,14 +27,12 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,9 +41,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,10 +50,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.twittercloneapp.data.remote.dto.TweetDto
+import com.example.twittercloneapp.presenter.general_components.PostItem
 import com.example.twittercloneapp.presenter.navigation.Screen
 import com.example.twittercloneapp.utils.Utils
 
@@ -73,6 +67,7 @@ fun UserProfileScreen(
 
     val user by viewModel.profileData.collectAsState()
     val tweetsProfile by viewModel.profileTweets.collectAsState()
+    val isFollowing by viewModel.isFollowing.collectAsState()
 
     LaunchedEffect(userId) {
         if (userId != null) {
@@ -147,17 +142,6 @@ fun UserProfileScreen(
                         }
                     }
 
-
-                    Button(
-                        onClick = {  },
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(16.dp),
-                        border = BorderStroke(1.dp, Color.White),
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        Text("Edit profile")
-                    }
                 }
 
                 Column(
@@ -195,9 +179,16 @@ fun UserProfileScreen(
                             }
                         }
 
-                        var isFollowing by remember { mutableStateOf(false) }
                         Button(
-                            onClick = { isFollowing = !isFollowing },
+                            onClick = {
+                                if (isFollowing) {
+                                    viewModel.downFollowing(userId ?: "")
+                                } else {
+                                    viewModel.following(userId ?: "")
+                                }
+
+                                viewModel.isFollowing(userId ?: "")
+                            },
                             modifier = Modifier
                                 .height(36.dp)
                                 .padding(end = 16.dp),
@@ -208,7 +199,7 @@ fun UserProfileScreen(
                             shape = RoundedCornerShape(18.dp)
                         ) {
                             Text(
-                                text = if (isFollowing) "Following" else "Follow",
+                                text = if (isFollowing) "Siguiendo" else "Seguir",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -257,7 +248,7 @@ fun UserProfileScreen(
                 HorizontalDivider(color = Color.LightGray, thickness = 0.8.dp)
                 LazyColumn {
                     items(tweetsProfile) { tweet ->
-                        PostItem(tweet)
+                        PostItem(tweet, user)
                         HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
                     }
                 }
@@ -272,63 +263,3 @@ fun UserProfileScreen(
 
 }
 
-@Composable
-private fun PostItem(post: TweetDto) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(Color.LightGray)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Profile Picture",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .align(Alignment.Center)
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .padding(start = 12.dp)
-                    .weight(1f)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Pixsellz",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                    Text(
-                        text = " · ${post.date}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = post.message ?: "",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
-    }
-}

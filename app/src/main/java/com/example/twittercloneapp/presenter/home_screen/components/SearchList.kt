@@ -29,6 +29,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -69,17 +73,25 @@ fun SearchList(
 
         LazyColumn {
             items(searchResults) { user ->
+
+                var isFollowing by remember { mutableStateOf(false) }
+
+                LaunchedEffect(user.id) {
+                    isFollowing = viewModel.isFollowing(user.id ?: "")
+                }
+
                 ProfileCard(
                     name = user.name ?: "",
-                    description = user.bibliography ?: "",
-                    isFollowing = false,
+                    description = if (isFollowing) "Seguido" else "No Seguido",
+                    isFollowing = isFollowing,
                     onFollowClick = {
                         navController.navigate(
                             Screen.UsersProfiles.createRoute(
                                 userId = user.id ?: ""
                             )
                         )
-                    })
+                    }
+                )
             }
         }
     }
@@ -129,7 +141,7 @@ fun ProfileCard(
             }
 
             Text(
-                text = "description",
+                text = description,
                 fontSize = 13.sp,
                 color = Color.Black
             )

@@ -51,7 +51,6 @@ import com.example.twittercloneapp.presenter.navigation.Screen
 @Composable
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
 
-    val posts by viewModel.posts.collectAsState()
     val messageAlert by viewModel.messageAlert.collectAsState()
     val currentScreen = remember { mutableStateOf("TweetList") }
     val context = LocalContext.current
@@ -89,12 +88,6 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                     Icon(imageVector = Icons.Default.Add, "")
                 }
 
-                "Profile" -> FloatingActionButton(onClick = {
-                    navController.navigate(Screen.EditProfile.route)
-                }) {
-                    Icon(imageVector = Icons.Default.Edit, "")
-                }
-
                 else -> {}
             }
 
@@ -107,13 +100,14 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                 .padding(innerPadding),
         ) {
             when (currentScreen.value) {
-                "TweetList" -> TweetList(posts = posts)
+                "TweetList" -> TweetList(viewModel)
                 "Search" -> SearchList(navController, viewModel)
                 "Profile" -> UserProfile(
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    navController = navController
                 )
 
-                else -> TweetList(posts = posts)
+                else -> TweetList(viewModel)
             }
         }
 

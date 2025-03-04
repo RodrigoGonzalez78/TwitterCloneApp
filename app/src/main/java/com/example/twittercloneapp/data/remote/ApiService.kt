@@ -73,19 +73,19 @@ interface ApiService {
         @Query("id") id: String
     )
 
-    @POST("/highRelation")
+    @POST("/highrelation")
     suspend fun createRelation(
         @Query("id") id: String,
         @Header("Authorization") token: String
     )
 
-    @DELETE("/downRelation")
+    @DELETE("/downrelation")
     suspend fun deleteRelation(
         @Query("id") id: String,
         @Header("Authorization") token: String
     )
 
-    @GET("/consultRelation")
+    @GET("/consultrelation")
     suspend fun consultRelation(
         @Query("id") id: String,
         @Header("Authorization") token: String
@@ -103,7 +103,7 @@ interface ApiService {
     suspend fun readTweetsFollowers(
         @Query("page") page: Int,
         @Header("Authorization") token: String
-    ): List<ReturnTweetsFollowers>
+    ): List<ReturnTweetsFollowers>?
 
     companion object {
         const val BASE_URL = "http://192.168.100.7:8080"

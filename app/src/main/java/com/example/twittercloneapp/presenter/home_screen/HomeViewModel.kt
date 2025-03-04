@@ -42,8 +42,8 @@ class HomeViewModel @Inject constructor(
     private val _searchResult = MutableStateFlow<List<UserDto>>(emptyList())
     val searchResult: StateFlow<List<UserDto>> = _searchResult.asStateFlow()
 
-    private val _profileTweets= MutableStateFlow<List<TweetDto>>(emptyList())
-    val profileTweets: StateFlow<List<TweetDto>> =_profileTweets.asStateFlow()
+    private val _profileTweets = MutableStateFlow<List<TweetDto>>(emptyList())
+    val profileTweets: StateFlow<List<TweetDto>> = _profileTweets.asStateFlow()
 
     init {
         getTweets()
@@ -61,10 +61,22 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun profileData(){
+    fun profileData() {
         this.getProfile()
         this.getProfileTweets()
     }
+
+    suspend fun getUserProfile(userId: String):UserDto {
+        return try {
+            val token = "Bearer " + dataStore.getJwt().first().toString()
+            val profileDt = apiService.viewProfile(token, userId)
+            return profileDt
+        } catch (e: Exception) {
+            Log.e("MiApp", "Carar perfil" + e.message.toString())
+            return UserDto()
+        }
+    }
+
 
     private fun searchUsers(searchWords: String) {
         viewModelScope.launch {
@@ -75,12 +87,23 @@ class HomeViewModel @Inject constructor(
                 } else {
                     val token = "Bearer " + dataStore.getJwt().first().toString()
                     _searchResult.value =
-                        apiService.listUsers(1, "new", searchWords, token) ?: emptyList()
+                        apiService.listUsers(1, "", searchWords, token) ?: emptyList()
                 }
 
             } catch (e: Exception) {
                 Log.e("MiApp", "Carar perfil" + e.message.toString())
             }
+        }
+    }
+
+    suspend fun isFollowing(userId: String): Boolean {
+        return try {
+            val token = "Bearer " + dataStore.getJwt().first().toString()
+            val response = apiService.consultRelation(userId, token)
+            response.status
+        } catch (e: Exception) {
+            Log.e("MiApp", "Error al consultar la relación: ${e.message}")
+            false
         }
     }
 
@@ -119,7 +142,7 @@ class HomeViewModel @Inject constructor(
             try {
                 val token = "Bearer " + dataStore.getJwt().first().toString()
                 val tweets = apiService.readTweetsFollowers(1, token)
-                _posts.value = tweets
+                _posts.value = tweets ?: emptyList()
 
             } catch (e: Exception) {
                 _messageAlert.update {
