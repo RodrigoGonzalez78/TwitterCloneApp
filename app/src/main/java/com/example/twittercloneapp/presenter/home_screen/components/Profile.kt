@@ -1,9 +1,13 @@
 package com.example.twittercloneapp.presenter.home_screen.components
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -50,10 +55,23 @@ import com.example.twittercloneapp.utils.Utils
 
 
 @Composable
-fun UserProfile(viewModel: HomeViewModel = hiltViewModel(),navController: NavController) {
+fun UserProfile(viewModel: HomeViewModel = hiltViewModel(), navController: NavController) {
 
     val user by viewModel.profileData.collectAsState()
     val tweetsProfile by viewModel.profileTweets.collectAsState()
+
+
+    val context = LocalContext.current
+    val avatarUri by viewModel.avatarUri
+
+    // Launcher para seleccionar la imagen de la galería.
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            viewModel.onAvatarSelected(it)
+            // Opcional: iniciar la subida inmediatamente al seleccionar la imagen.
+            viewModel.uploadAvatar(context, it)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -65,9 +83,9 @@ fun UserProfile(viewModel: HomeViewModel = hiltViewModel(),navController: NavCon
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
-                .background(Color.Cyan)
+                .background(MaterialTheme.colorScheme.primary)
         ) {
-
+            // Caja para el avatar que es clickable para cambiarlo.
             Box(
                 modifier = Modifier
                     .size(90.dp)
@@ -75,9 +93,10 @@ fun UserProfile(viewModel: HomeViewModel = hiltViewModel(),navController: NavCon
                     .clip(CircleShape)
                     .background(Color.White)
                     .border(3.dp, Color.LightGray, CircleShape)
-
+                    .clickable { launcher.launch("image/*") }
             ) {
-                if (user.avatar.isNullOrEmpty()) {
+                // Si no hay imagen seleccionada ni avatar del usuario, muestra un ícono.
+                if (avatarUri == null && user.avatar.isNullOrEmpty()) {
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = "Avatar",
@@ -87,8 +106,14 @@ fun UserProfile(viewModel: HomeViewModel = hiltViewModel(),navController: NavCon
                             .align(Alignment.Center)
                     )
                 } else {
+                    // Muestra la imagen seleccionada o la existente del usuario.
+                    val painter = if (avatarUri != null) {
+                        rememberAsyncImagePainter(avatarUri)
+                    } else {
+                        rememberAsyncImagePainter(user.avatar)
+                    }
                     Image(
-                        painter = rememberAsyncImagePainter(user.avatar),
+                        painter = painter,
                         contentDescription = "Profile Picture",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
@@ -96,7 +121,7 @@ fun UserProfile(viewModel: HomeViewModel = hiltViewModel(),navController: NavCon
                 }
             }
 
-
+            // Botón para editar el perfil (navega a otra pantalla).
             Button(
                 onClick = { navController.navigate(Screen.EditProfile.route) },
                 modifier = Modifier

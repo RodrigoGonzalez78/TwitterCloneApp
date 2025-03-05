@@ -81,7 +81,7 @@ fun SearchList(
                 }
 
                 ProfileCard(
-                    name = user.name ?: "",
+                    name = (user.name ?: "") +" "+ (user.lastName ?: "") ,
                     description = if (isFollowing) "Seguido" else "No Seguido",
                     isFollowing = isFollowing,
                     onFollowClick = {

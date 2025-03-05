@@ -1,7 +1,10 @@
 package com.example.twittercloneapp.presenter.home_screen
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.twittercloneapp.data.remote.ApiService
@@ -11,12 +14,18 @@ import com.example.twittercloneapp.data.remote.dto.UserDto
 import com.example.twittercloneapp.data.repository.DataStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import javax.inject.Inject
 
 
@@ -45,9 +54,63 @@ class HomeViewModel @Inject constructor(
     private val _profileTweets = MutableStateFlow<List<TweetDto>>(emptyList())
     val profileTweets: StateFlow<List<TweetDto>> = _profileTweets.asStateFlow()
 
+
+    private val _avatarUri = mutableStateOf<Uri?>(null)
+    val avatarUri: State<Uri?> get() = _avatarUri
+
     init {
         getTweets()
     }
+
+
+    fun onAvatarSelected(uri: Uri?) {
+        _avatarUri.value = uri
+    }
+
+
+    fun uploadAvatar(context: Context, uri: Uri) {
+        viewModelScope.launch {
+            try {
+
+                val file = getFileFromUri(context, uri)
+                file?.let {
+                    val requestFile = it.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                    val body = MultipartBody.Part.createFormData("avatar", it.name, requestFile)
+
+                    val token = "Bearer " + dataStore.getJwt().first().toString()
+                    val response = apiService.uploadAvatar(body,token)
+                    if (response.isSuccessful) {
+                        Log.d("Upload", "Avatar subido correctamente")
+
+                    } else {
+                        val errorMsg = response.errorBody()?.string() ?: "Error desconocido"
+                        Log.e("Upload", "Error al subir avatar: $errorMsg")
+                    }
+                } ?: Log.e("Upload", "No se pudo crear el archivo a partir de la URI")
+            } catch (e: Exception) {
+                Log.e("Upload", "Excepción al subir avatar: ${e.message}")
+            }
+        }
+    }
+
+
+    private suspend fun getFileFromUri(context: Context, uri: Uri): File? {
+        return withContext(Dispatchers.IO) {
+            try {
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    val file = File.createTempFile("upload", ".jpg", context.cacheDir)
+                    file.outputStream().use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                    file
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
 
     fun changeSearchTerm(word: String) {
         _searchTerm.value = word

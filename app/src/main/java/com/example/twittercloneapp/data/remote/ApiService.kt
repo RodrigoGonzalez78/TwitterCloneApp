@@ -7,7 +7,9 @@ import com.example.twittercloneapp.data.remote.dto.TweetDto
 import com.example.twittercloneapp.data.remote.dto.UserDto
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
+
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -45,30 +47,31 @@ interface ApiService {
         @Header("Authorization") token: String
     ): List<TweetDto>
 
-    @DELETE("/deleteTweet")
+    @DELETE("/deletetweet")
     suspend fun deleteTweet(
         @Query("id") id: String,
         @Query("userId") userId: String
     )
 
     @Multipart
-    @POST("/uploadAvatar")
+    @POST("/uploadavatar")
     suspend fun uploadAvatar(
-        @Part avatar: MultipartBody.Part
-    ): Call<ResponseBody>
+        @Part avatar: MultipartBody.Part,
+        @Header("Authorization") token: String
+    ): Response<ResponseBody>
 
     @Multipart
-    @POST("/uploadBanner")
+    @POST("/uploadbanner")
     suspend fun uploadBanner(
         @Part banner: MultipartBody.Part
     )
 
-    @GET("/getAvatar")
+    @GET("/getavatar")
     suspend fun getAvatar(
         @Query("id") id: String
     )
 
-    @GET("/getBanner")
+    @GET("/getbanner")
     suspend fun getBanner(
         @Query("id") id: String
     )

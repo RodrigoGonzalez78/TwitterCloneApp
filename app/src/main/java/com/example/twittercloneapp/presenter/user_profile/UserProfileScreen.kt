@@ -79,7 +79,7 @@ fun UserProfileScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.DarkGray,
+                    containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = Color.White,
                     navigationIconContentColor = Color.White
                 ),
@@ -113,7 +113,7 @@ fun UserProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(120.dp)
-                        .background(Color.Black)
+                        .background(MaterialTheme.colorScheme.primary)
                 ) {
                     Box(
                         modifier = Modifier

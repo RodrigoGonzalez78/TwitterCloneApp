@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.twittercloneapp.data.remote.dto.TweetDto
 import com.example.twittercloneapp.data.remote.dto.UserDto
+import com.example.twittercloneapp.utils.Utils
 
 @Composable
 fun PostItem(post: TweetDto, user: UserDto) {
@@ -70,7 +71,7 @@ fun PostItem(post: TweetDto, user: UserDto) {
                         )
                     )
                     Text(
-                        text = " · ${post.date}",
+                        text = " · ${Utils.formatISODateLegacy(post.date)}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray
                     )

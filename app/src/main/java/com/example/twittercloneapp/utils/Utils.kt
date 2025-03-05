@@ -1,5 +1,6 @@
 package com.example.twittercloneapp.utils
 
+import android.util.Log
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -28,27 +29,27 @@ object Utils {
         }
 
         return try {
+
             val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
             val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
             val date: Date? = inputFormat.parse(originalDate)
             date?.let { outputFormat.format(it) } ?: "Formato inválido"
         } catch (e: Exception) {
+
             "Formato inválido"
         }
     }
 
     fun formatISODateLegacy(originalDate: String?): String {
-        if (originalDate.isNullOrBlank()) {
-            return "Fecha no disponible"
-        }
+        if (originalDate.isNullOrBlank()) return "Fecha no disponible"
 
         return try {
-
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", Locale.getDefault())
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
             val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-            val date: Date? = inputFormat.parse(originalDate.trim())
-            date?.let { outputFormat.format(it) } ?: "Formato inválido"
+            val date = inputFormat.parse(originalDate.trim())
+            if (date != null) outputFormat.format(date) else "Formato inválido"
         } catch (e: Exception) {
             "Formato inválido"
         }
