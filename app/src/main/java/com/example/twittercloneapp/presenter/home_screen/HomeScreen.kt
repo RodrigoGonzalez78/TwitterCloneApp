@@ -51,7 +51,6 @@ import com.example.twittercloneapp.presenter.navigation.Screen
 @Composable
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
 
-    val messageAlert by viewModel.messageAlert.collectAsState()
     val currentScreen = remember { mutableStateOf("TweetList") }
     val context = LocalContext.current
 
@@ -109,11 +108,6 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
 
                 else -> TweetList(viewModel)
             }
-        }
-
-        LaunchedEffect(messageAlert) {
-            Toast.makeText(context, messageAlert, Toast.LENGTH_LONG).show()
-
         }
     }
 

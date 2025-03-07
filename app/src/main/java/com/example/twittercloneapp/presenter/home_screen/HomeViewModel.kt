@@ -1,6 +1,8 @@
 package com.example.twittercloneapp.presenter.home_screen
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
@@ -26,6 +28,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import java.io.InputStream
 import javax.inject.Inject
 
 
@@ -39,9 +42,6 @@ class HomeViewModel @Inject constructor(
     private val _posts = MutableStateFlow<List<ReturnTweetsFollowers>>(emptyList())
     val posts: StateFlow<List<ReturnTweetsFollowers>> = _posts.asStateFlow()
 
-    private val _messageAlert = MutableStateFlow("")
-    val messageAlert: StateFlow<String> = _messageAlert.asStateFlow()
-
     private val _profileData = MutableStateFlow(UserDto())
     val profileData: StateFlow<UserDto> = _profileData.asStateFlow()
 
@@ -54,9 +54,15 @@ class HomeViewModel @Inject constructor(
     private val _profileTweets = MutableStateFlow<List<TweetDto>>(emptyList())
     val profileTweets: StateFlow<List<TweetDto>> = _profileTweets.asStateFlow()
 
+    private val _avatarBitmap = mutableStateOf<Bitmap?>(null)
+    val avatarBitmap: State<Bitmap?> get() = _avatarBitmap
+
+    private val _bannerBitmap = mutableStateOf<Bitmap?>(null)
+    val bannerBitmap: State<Bitmap?> get() = _bannerBitmap
 
     private val _avatarUri = mutableStateOf<Uri?>(null)
-    val avatarUri: State<Uri?> get() = _avatarUri
+    private val _bannerUri = mutableStateOf<Uri?>(null)
+
 
     init {
         getTweets()
@@ -65,6 +71,59 @@ class HomeViewModel @Inject constructor(
 
     fun onAvatarSelected(uri: Uri?) {
         _avatarUri.value = uri
+    }
+
+    fun onBannerSelected(uri: Uri?) {
+        _bannerUri.value = uri
+    }
+
+    fun fetchMyAvatar() {
+        viewModelScope.launch {
+            val idUser = dataStore.getUserId().first().toString()
+            _avatarBitmap.value = fetchAvatar(idUser)
+        }
+
+    }
+
+    fun fetchMyBanner() {
+        viewModelScope.launch {
+            val idUser = dataStore.getUserId().first().toString()
+            _bannerBitmap.value = fetchBanner(idUser)
+        }
+
+    }
+
+    suspend fun fetchBanner(userId: String): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val token = "Bearer " + dataStore.getJwt().first().toString()
+                val response = apiService.getBanner(userId, token)
+
+                response.body()?.byteStream()?.use { inputStream ->
+                    return@withContext BitmapFactory.decodeStream(inputStream)
+                }
+            } catch (e: Exception) {
+                Log.d("MYApp", "Error al obtener el banner: ${e.message}")
+                return@withContext null
+            }
+        }
+    }
+
+
+    suspend fun fetchAvatar(userId: String): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val token = "Bearer " + dataStore.getJwt().first().toString()
+                val response = apiService.getAvatar(userId, token)
+
+                response.body()?.byteStream()?.use { inputStream ->
+                    return@withContext BitmapFactory.decodeStream(inputStream)
+                }
+            } catch (e: Exception) {
+                Log.d("MYApp", "Erroe al obtener el avatar")
+                return@withContext null
+            }
+        }
     }
 
 
@@ -78,7 +137,7 @@ class HomeViewModel @Inject constructor(
                     val body = MultipartBody.Part.createFormData("avatar", it.name, requestFile)
 
                     val token = "Bearer " + dataStore.getJwt().first().toString()
-                    val response = apiService.uploadAvatar(body,token)
+                    val response = apiService.uploadAvatar(body, token)
                     if (response.isSuccessful) {
                         Log.d("Upload", "Avatar subido correctamente")
 
@@ -89,6 +148,32 @@ class HomeViewModel @Inject constructor(
                 } ?: Log.e("Upload", "No se pudo crear el archivo a partir de la URI")
             } catch (e: Exception) {
                 Log.e("Upload", "Excepción al subir avatar: ${e.message}")
+            }
+        }
+    }
+
+
+    fun uploadBanner(context: Context, uri: Uri) {
+        viewModelScope.launch {
+            try {
+
+                val file = getFileFromUri(context, uri)
+                file?.let {
+                    val requestFile = it.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                    val body = MultipartBody.Part.createFormData("banner", it.name, requestFile)
+
+                    val token = "Bearer " + dataStore.getJwt().first().toString()
+                    val response = apiService.uploadBanner(body, token)
+                    if (response.isSuccessful) {
+                        Log.d("Upload", "Banner subido correctamente")
+
+                    } else {
+                        val errorMsg = response.errorBody()?.string() ?: "Error desconocido"
+                        Log.e("Upload", "Error al subir Banner: $errorMsg")
+                    }
+                } ?: Log.e("Upload", "No se pudo crear el archivo a partir de la URI")
+            } catch (e: Exception) {
+                Log.e("Upload", "Excepción al subir banner: ${e.message}")
             }
         }
     }
@@ -117,19 +202,16 @@ class HomeViewModel @Inject constructor(
         searchUsers(_searchTerm.value)
     }
 
-    fun closeSession() {
-        viewModelScope.launch {
-            dataStore.deleteJwt()
-            dataStore.deleteUserId()
-        }
-    }
+
 
     fun profileData() {
         this.getProfile()
         this.getProfileTweets()
+        this.fetchMyAvatar()
+        this.fetchMyBanner()
     }
 
-    suspend fun getUserProfile(userId: String):UserDto {
+    suspend fun getUserProfile(userId: String): UserDto {
         return try {
             val token = "Bearer " + dataStore.getJwt().first().toString()
             val profileDt = apiService.viewProfile(token, userId)
@@ -170,7 +252,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getProfile() {
+    private fun getProfile() {
 
         viewModelScope.launch {
             try {
@@ -180,9 +262,6 @@ class HomeViewModel @Inject constructor(
                 _profileData.value = profileDt
 
             } catch (e: Exception) {
-                _messageAlert.update {
-                    "Carar perfil" + e.message.toString()
-                }
                 Log.e("MiApp", "Carar perfil" + e.message.toString())
             }
         }
@@ -208,9 +287,6 @@ class HomeViewModel @Inject constructor(
                 _posts.value = tweets ?: emptyList()
 
             } catch (e: Exception) {
-                _messageAlert.update {
-                    "Cargar los tweets" + e.message.toString()
-                }
                 Log.e("MiApp", "Cargar los tweets" + e.message.toString())
             }
         }

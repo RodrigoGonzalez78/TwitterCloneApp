@@ -1,6 +1,9 @@
 package com.example.twittercloneapp.presenter.home_screen.components
 
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +26,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -36,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -75,22 +80,25 @@ fun SearchList(
             items(searchResults) { user ->
 
                 var isFollowing by remember { mutableStateOf(false) }
+                var avatarBitmap by remember { mutableStateOf<Bitmap?>(null) }
+
 
                 LaunchedEffect(user.id) {
                     isFollowing = viewModel.isFollowing(user.id ?: "")
+                    avatarBitmap = viewModel.fetchAvatar(user.id ?: "")
                 }
 
                 ProfileCard(
-                    name = (user.name ?: "") +" "+ (user.lastName ?: "") ,
+                    name = (user.name ?: "") + " " + (user.lastName ?: ""),
                     description = if (isFollowing) "Seguido" else "No Seguido",
-                    isFollowing = isFollowing,
                     onFollowClick = {
                         navController.navigate(
                             Screen.UsersProfiles.createRoute(
                                 userId = user.id ?: ""
                             )
                         )
-                    }
+                    },
+                    avatarBitmap = avatarBitmap
                 )
             }
         }
@@ -101,8 +109,7 @@ fun SearchList(
 fun ProfileCard(
     name: String,
     description: String,
-    isFollowing: Boolean,
-    profileImageUrl: String = "https://img.freepik.com/vector-premium/icono-perfil-simple-color-blanco-icono_1076610-50204.jpg?semt=ais_hybrid",
+    avatarBitmap: Bitmap?,
     onFollowClick: () -> Unit
 ) {
 
@@ -115,14 +122,26 @@ fun ProfileCard(
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        AsyncImage(
-            model = profileImageUrl,
-            contentDescription = "Foto de perfil",
+
+        Box(
             modifier = Modifier
                 .size(40.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
+                .clip(CircleShape)
+        ) {
+            avatarBitmap?.let { bitmap ->
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } ?: Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Avatar",
+                tint = Color.Gray,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
         Spacer(modifier = Modifier.width(8.dp))
 

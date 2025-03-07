@@ -8,7 +8,6 @@ import com.example.twittercloneapp.data.remote.dto.UserDto
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -63,18 +62,21 @@ interface ApiService {
     @Multipart
     @POST("/uploadbanner")
     suspend fun uploadBanner(
-        @Part banner: MultipartBody.Part
-    )
+        @Part banner: MultipartBody.Part,
+        @Header("Authorization") token: String
+    ): Response<ResponseBody>
 
     @GET("/getavatar")
     suspend fun getAvatar(
-        @Query("id") id: String
-    )
+        @Query("id") id: String,
+        @Header("Authorization") token: String
+    ): Response<ResponseBody>
 
     @GET("/getbanner")
     suspend fun getBanner(
-        @Query("id") id: String
-    )
+        @Query("id") id: String,
+        @Header("Authorization") token: String
+    ): Response<ResponseBody>
 
     @POST("/highrelation")
     suspend fun createRelation(

@@ -43,6 +43,14 @@ class EditProfileViewModel @Inject constructor(
     private val _messageAlert = MutableStateFlow("")
     val messageAlert: StateFlow<String> = _messageAlert.asStateFlow()
 
+
+    fun closeSession() {
+        viewModelScope.launch {
+            dataStore.deleteJwt()
+            dataStore.deleteUserId()
+        }
+    }
+
     fun loadUserProfile() {
         viewModelScope.launch {
 

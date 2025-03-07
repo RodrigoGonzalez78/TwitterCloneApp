@@ -1,5 +1,6 @@
 package com.example.twittercloneapp.presenter.home_screen.components
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
@@ -25,11 +26,14 @@ fun TweetList(viewModel: HomeViewModel) {
     LazyColumn {
         items(posts) { post ->
             var userData by remember { mutableStateOf(UserDto()) }
+            var avatarBitmap by remember { mutableStateOf<Bitmap?>(null) }
+
 
             LaunchedEffect(post.userID) {
                 userData = viewModel.getUserProfile(post.userID ?: "")
+                avatarBitmap=viewModel.fetchAvatar(post.userID?:"")
             }
-            PostItem(post.tweet ?: TweetDto(), userData)
+            PostItem(post.tweet ?: TweetDto(), userData,avatarBitmap)
             HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
         }
     }

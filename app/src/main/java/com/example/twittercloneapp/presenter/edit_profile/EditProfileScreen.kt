@@ -107,6 +107,9 @@ fun EditUserScreen(
             Button(onClick = { viewModel.saveProfile() }, modifier = Modifier.fillMaxWidth()) {
                 Text("Save")
             }
+            Button(onClick = { viewModel.closeSession() }, modifier = Modifier.fillMaxWidth()) {
+                Text("Cerrar Sesion")
+            }
             LaunchedEffect(messageAlert) {
                     Toast.makeText(context, messageAlert, Toast.LENGTH_LONG).show()
 

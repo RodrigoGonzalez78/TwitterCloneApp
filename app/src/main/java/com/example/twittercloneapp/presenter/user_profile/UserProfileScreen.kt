@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,6 +69,8 @@ fun UserProfileScreen(
     val user by viewModel.profileData.collectAsState()
     val tweetsProfile by viewModel.profileTweets.collectAsState()
     val isFollowing by viewModel.isFollowing.collectAsState()
+    val avatarBitmap by viewModel.avatarBitmap
+    val bannerBitmap by viewModel.bannerBitmap
 
     LaunchedEffect(userId) {
         if (userId != null) {
@@ -115,6 +118,22 @@ fun UserProfileScreen(
                         .height(120.dp)
                         .background(MaterialTheme.colorScheme.primary)
                 ) {
+                    if (user.banner.isNullOrEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.primary)
+                        )
+                    } else {
+                        bannerBitmap?.let {
+                            Image(
+                                bitmap = it.asImageBitmap(),
+                                contentDescription = "Banner Image",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
                     Box(
                         modifier = Modifier
                             .size(90.dp)
@@ -133,11 +152,18 @@ fun UserProfileScreen(
                                     .align(Alignment.Center)
                             )
                         } else {
-                            Image(
-                                painter = rememberAsyncImagePainter(user.avatar),
-                                contentDescription = "Profile Picture",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
+                            avatarBitmap?.let {
+                                Image(
+                                    bitmap = it.asImageBitmap(),
+                                    contentDescription = "Profile Picture",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } ?: Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Avatar",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(55.dp)
                             )
                         }
                     }
@@ -248,7 +274,7 @@ fun UserProfileScreen(
                 HorizontalDivider(color = Color.LightGray, thickness = 0.8.dp)
                 LazyColumn {
                     items(tweetsProfile) { tweet ->
-                        PostItem(tweet, user)
+                        PostItem(tweet, user, avatarBitmap)
                         HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
                     }
                 }
