@@ -218,10 +218,6 @@ fun UserProfileScreen(
                             modifier = Modifier
                                 .height(36.dp)
                                 .padding(end = 16.dp),
-                            border = if (isFollowing) BorderStroke(
-                                1.dp,
-                                Color(0xFF1DA1F2)
-                            ) else null,
                             shape = RoundedCornerShape(18.dp)
                         ) {
                             Text(

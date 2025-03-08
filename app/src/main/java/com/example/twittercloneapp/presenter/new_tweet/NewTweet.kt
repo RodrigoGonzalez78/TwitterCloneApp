@@ -54,7 +54,7 @@ fun NewTweet(navController: NavController, viewModel: NewTweetViewModel = hiltVi
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.DarkGray,
+                    containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = Color.White,
                     navigationIconContentColor = Color.White
                 ),
@@ -67,7 +67,9 @@ fun NewTweet(navController: NavController, viewModel: NewTweetViewModel = hiltVi
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.navigate(Screen.Home.route)
+                        navController.navigate(Screen.Home.route){
+                            popUpTo(0) { inclusive = true }
+                        }
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -95,7 +97,7 @@ fun NewTweet(navController: NavController, viewModel: NewTweetViewModel = hiltVi
                 OutlinedTextField(
                     value = uiState.tweet,
                     onValueChange = { viewModel.onTweetChange(it) },
-                    label = { Text("Algo") },
+                    label = { Text("Escribe algo...") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     maxLines = 5,
@@ -138,7 +140,9 @@ fun NewTweet(navController: NavController, viewModel: NewTweetViewModel = hiltVi
             LaunchedEffect(uiState.message) {
                 if (uiState.notification) {
                     Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
-                    viewModel.changeNotification(false)
+                    navController.navigate(Screen.Home.route){
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             }
 

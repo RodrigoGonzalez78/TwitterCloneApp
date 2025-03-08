@@ -72,6 +72,7 @@ fun UserProfile(viewModel: HomeViewModel = hiltViewModel(), navController: NavCo
             uri?.let {
                 viewModel.onAvatarSelected(it)
                 viewModel.uploadAvatar(context, it)
+                viewModel.fetchMyAvatar()
             }
         }
 
@@ -80,6 +81,7 @@ fun UserProfile(viewModel: HomeViewModel = hiltViewModel(), navController: NavCo
             uri?.let {
                 viewModel.onBannerSelected(it)
                 viewModel.uploadBanner(context, it)
+                viewModel.fetchMyBanner()
             }
         }
 

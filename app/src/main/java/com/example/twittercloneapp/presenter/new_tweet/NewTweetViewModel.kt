@@ -41,7 +41,7 @@ class NewTweetViewModel @Inject constructor(
     fun validateAndRegister() {
         val currentState = _uiState.value
         val errors = NewTweetUiState(
-            tweetError = if ( currentState.tweet.isEmpty()) "" else "",
+            tweetError = if ( currentState.tweet.isEmpty()) "El campo esta vacio" else "",
         )
         _uiState.update {
             it.copy(
@@ -79,8 +79,8 @@ class NewTweetViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        notification = true,
-                        message = "Error al crear el tweet: ${e.message}"
+                        notification = false,
+                        message = "Error al crear el tweet"
                     )
                 }
             }
