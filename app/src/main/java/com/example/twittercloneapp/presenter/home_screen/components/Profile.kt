@@ -262,7 +262,10 @@ fun UserProfile(viewModel: HomeViewModel = hiltViewModel(), navController: NavCo
         HorizontalDivider(color = Color.LightGray, thickness = 0.8.dp)
         LazyColumn {
             items(tweetsProfile) { tweet ->
-                PostItem(tweet, user, avatarBitmap)
+                PostItem(tweet, user, avatarBitmap, optionsEnabled = true, onDeleteTweet = {
+                    viewModel.deleteTweet(tweet.id ?: "")
+                    viewModel.getProfileTweets()
+                })
                 HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
             }
         }

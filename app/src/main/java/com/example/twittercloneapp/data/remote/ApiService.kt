@@ -49,7 +49,8 @@ interface ApiService {
     @DELETE("/deletetweet")
     suspend fun deleteTweet(
         @Query("id") id: String,
-        @Query("userId") userId: String
+        @Query("userId") userId: String,
+        @Header("Authorization") token: String
     )
 
     @Multipart

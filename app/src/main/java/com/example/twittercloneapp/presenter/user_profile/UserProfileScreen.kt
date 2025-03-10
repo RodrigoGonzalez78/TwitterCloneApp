@@ -229,30 +229,36 @@ fun UserProfileScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    if (user.bibliography.isNullOrBlank().not()) {
+                        Text(
+                            text = user.bibliography ?: "",
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis
+                        )
 
-                    Text(
-                        text = user.bibliography ?: "",
-                        style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    }
+
 
                     Row(
                         modifier = Modifier.padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = "Website",
-                            tint = Color(0xFF1DA1F2),
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = user.webSite ?: "",
-                            color = Color(0xFF1DA1F2),
-                            modifier = Modifier.padding(start = 4.dp)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
+
+                        if (user.webSite.isNullOrBlank().not()){
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "Website",
+                                tint = Color(0xFF1DA1F2),
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = user.webSite ?: "",
+                                color = Color(0xFF1DA1F2),
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                        }
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = "Join date",

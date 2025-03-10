@@ -9,6 +9,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.twittercloneapp.data.remote.ApiService
 import com.example.twittercloneapp.data.remote.dto.ReturnTweetsFollowers
 import com.example.twittercloneapp.data.remote.dto.TweetDto
@@ -203,7 +204,6 @@ class HomeViewModel @Inject constructor(
     }
 
 
-
     fun profileData() {
         this.getProfile()
         this.getProfileTweets()
@@ -267,7 +267,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun getProfileTweets() {
+    fun getProfileTweets() {
         viewModelScope.launch {
             try {
                 val token = "Bearer " + dataStore.getJwt().first().toString()
@@ -279,7 +279,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun getTweets() {
+     fun getTweets() {
         viewModelScope.launch {
             try {
                 val token = "Bearer " + dataStore.getJwt().first().toString()
@@ -288,6 +288,18 @@ class HomeViewModel @Inject constructor(
 
             } catch (e: Exception) {
                 Log.e("MiApp", "Cargar los tweets" + e.message.toString())
+            }
+        }
+    }
+
+    fun deleteTweet(tweetId: String) {
+        viewModelScope.launch {
+            try {
+                val token = "Bearer " + dataStore.getJwt().first().toString()
+                val id = dataStore.getUserId().first().toString()
+                apiService.deleteTweet(id = tweetId, userId = id, token = token)
+            } catch (e: Exception) {
+                Log.e("MiApp", "Error al borrar el tweet " + e.message.toString())
             }
         }
     }
