@@ -1,6 +1,6 @@
 # Aplicacion clon de Twitter o X
 
-Aplicación Android desarrollada en Kotlin con Jetpack Compose, basada en una API previamente construida. Utiliza Retrofit para la comunicación con la API, DataStore para el almacenamiento de datos y Hilt para la inyección de dependencias. Además, sigue buenas prácticas de desarrollo y la arquitectura Clean Architecture.
+Aplicación Android desarrollada en Kotlin con Jetpack Compose, basada en una API previamente construida. Utiliza Retrofit para la comunicación con la API, DataStore para el almacenamiento de datos y Hilt para la inyección de dependencias. 
 
 
 [Repositorio del Backend](https://github.com/RodrigoGonzalez78/twitter_clone_backEnd)
